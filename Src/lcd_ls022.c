@@ -2,28 +2,14 @@
 #include "lcd_ls022.h"
 #include "main.h"
 #include "LCDConf_FlexColor.h"
-void SendCom(unsigned int com) {
-	HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_CD_PIN, GPIO_PIN_RESET); //DC_Write(0);
-	LCD_DATA_PORT->ODR &= 0xFFFFFF00;
-	LCD_DATA_PORT->ODR |= com; //LCD_DATA_Write(com);
-	HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_WR_PIN, GPIO_PIN_RESET); //WR_Write(0);
-	HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_WR_PIN, GPIO_PIN_SET); //WR_Write(1);
-}
-void SendDat(unsigned int dat) {
-	HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_CD_PIN, GPIO_PIN_SET); //DC_Write(1);
-	LCD_DATA_PORT->ODR &= 0xFFFFFF00;
-	LCD_DATA_PORT->ODR |= dat; //LCD_DATA_Write(dat);
-	HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_WR_PIN, GPIO_PIN_RESET); //WR_Write(0);
-	HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_WR_PIN, GPIO_PIN_SET); //WR_Write(1);
-}
-void wr_cmd8(char cmd) {
+void SendCom(unsigned int cmd) {
 	HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_CD_PIN, GPIO_PIN_RESET); //DC_Write(0);
 	LCD_DATA_PORT->ODR &= 0xFFFFFF00;
 	LCD_DATA_PORT->ODR |= cmd; //LCD_DATA_Write(com);
 	HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_WR_PIN, GPIO_PIN_RESET); //WR_Write(0);
 	HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_WR_PIN, GPIO_PIN_SET); //WR_Write(1);
 }
-void wr_data8(char dat) {
+void SendDat(unsigned int dat) {
 	HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_CD_PIN, GPIO_PIN_SET); //DC_Write(1);
 	LCD_DATA_PORT->ODR &= 0xFFFFFF00;
 	LCD_DATA_PORT->ODR |= dat; //LCD_DATA_Write(dat);
@@ -42,218 +28,206 @@ void S6D04D1init(void) {
 	GPIO_Init();
 	HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_WR_PIN, GPIO_PIN_SET); //WR=0
 	HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_RST_PIN, GPIO_PIN_RESET); //RES_Write(0);
-	HAL_Delay(1);//CyDelay(100);		//15 Us
+	HAL_Delay(1);//1ms
 	HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_RST_PIN, GPIO_PIN_SET);	//RES_Write(1);
-
 	//
-	wr_cmd8(0xE0);//MDDI Control 1 (E0h)
-	wr_data8(0x01);//VWAKE_EN=1, When VWAKE_EN is 1, client initiated wake-up is enabled
+	SendCom(0xE0);//MDDI Control 1 (E0h)
+	SendDat(0x01);//VWAKE_EN=1, When VWAKE_EN is 1, client initiated wake-up is enabled
 
-	wr_cmd8(0x11);//Sleep Out (11h)
+	SendCom(0x11);//Sleep Out (11h)
 	HAL_Delay(150);
 
-	wr_cmd8(0xF3);//Power Control Register (F3h)
-	wr_data8(0x01);//VCI1_EN
-	wr_data8(0x00);//
-	wr_data8(0x00);//
-	wr_data8(0x0C);//Do not set any higher VCI1 level than VCI -0.15V. 0C 0A
-	wr_data8(0x03);//VGH和VGL 01 02VGH=6VCI1,VGL=-4VCI1.
-	wr_data8(0x75);//
-	wr_data8(0x75);//
-	wr_data8(0x30);//
+	SendCom(0xF3);//Power Control Register (F3h)
+	SendDat(0x01);//VCI1_EN
+	SendDat(0x00);//
+	SendDat(0x00);//
+	SendDat(0x0C);//Do not set any higher VCI1 level than VCI -0.15V. 0C 0A
+	SendDat(0x03);//VGH和VGL 01 02VGH=6VCI1,VGL=-4VCI1.
+	SendDat(0x75);//
+	SendDat(0x75);//
+	SendDat(0x30);//
 
-	wr_cmd8(0xF4);//VCOM Control Register (F4h)
-	wr_data8(0x4C);//
-	wr_data8(0x4C);//
-	wr_data8(0x44);//
-	wr_data8(0x44);//
-	wr_data8(0x22);//
+	SendCom(0xF4);//VCOM Control Register (F4h)
+	SendDat(0x4C);//
+	SendDat(0x4C);//
+	SendDat(0x44);//
+	SendDat(0x44);//
+	SendDat(0x22);//
 
-	wr_cmd8(0xF5);//Source Output Control Register (F5h)
-	wr_data8(0x10);//
-	wr_data8(0x22);//
-	wr_data8(0x05);//
-	wr_data8(0xF0);//
-	wr_data8(0x70);//
-	wr_data8(0x1F);//
+	SendCom(0xF5);//Source Output Control Register (F5h)
+	SendDat(0x10);//
+	SendDat(0x22);//
+	SendDat(0x05);//
+	SendDat(0xF0);//
+	SendDat(0x70);//
+	SendDat(0x1F);//
 	HAL_Delay(30);//
 
-	wr_cmd8(0xF3);//Power Control Register (F3h)
-	wr_data8(0x03);//
+	SendCom(0xF3);//Power Control Register (F3h)
+	SendDat(0x03);//
 
 	HAL_Delay(30);
 
-	wr_cmd8(0xF3);//Power Control Register (F3h)
-	wr_data8(0x07);//
+	SendCom(0xF3);//Power Control Register (F3h)
+	SendDat(0x07);//
 
 	HAL_Delay(30);
 
-	wr_cmd8(0xF3);//Power Control Register (F3h)
-	wr_data8(0x0F);//
+	SendCom(0xF3);//Power Control Register (F3h)
+	SendDat(0x0F);//
 
 	HAL_Delay(30);
 
-	wr_cmd8(0xF3);//Power Control Register (F3h)
-	wr_data8(0x1F);//
+	SendCom(0xF3);//Power Control Register (F3h)
+	SendDat(0x1F);//
 
 	HAL_Delay(30);
 
-	wr_cmd8(0xF3);//Power Control Register (F3h)
-	wr_data8(0x7F);//
+	SendCom(0xF3);//Power Control Register (F3h)
+	SendDat(0x7F);//
 
 	HAL_Delay(30);
 
-	wr_cmd8(0xF7);//Positive Gamma Control Register for Red (F7h)
-	wr_data8(0x80);
-	wr_data8(0x00);
-	wr_data8(0x00);
-	wr_data8(0x05);
-	wr_data8(0x0D);
-	wr_data8(0x1F);
-	wr_data8(0x26);
-	wr_data8(0x2D);
-	wr_data8(0x14);
-	wr_data8(0x15);
-	wr_data8(0x26);
-	wr_data8(0x20);
-	wr_data8(0x01);
-	wr_data8(0x22);
-	wr_data8(0x22);
+	SendCom(0xF7);//Positive Gamma Control Register for Red (F7h)
+	SendDat(0x80);
+	SendDat(0x00);
+	SendDat(0x00);
+	SendDat(0x05);
+	SendDat(0x0D);
+	SendDat(0x1F);
+	SendDat(0x26);
+	SendDat(0x2D);
+	SendDat(0x14);
+	SendDat(0x15);
+	SendDat(0x26);
+	SendDat(0x20);
+	SendDat(0x01);
+	SendDat(0x22);
+	SendDat(0x22);
 
-	wr_cmd8(0xF8);//Negative Gamma Control Register for Red
-	wr_data8(0x80);
-	wr_data8(0x00);
-	wr_data8(0x00);
-	wr_data8(0x00);
-	wr_data8(0x07);
-	wr_data8(0x1E);
-	wr_data8(0x2A);
-	wr_data8(0x32);
-	wr_data8(0x10);
-	wr_data8(0x16);
-	wr_data8(0x36);
-	wr_data8(0x3C);
-	wr_data8(0x3B);
-	wr_data8(0x22);
-	wr_data8(0x22);
+	SendCom(0xF8);//Negative Gamma Control Register for Red
+	SendDat(0x80);
+	SendDat(0x00);
+	SendDat(0x00);
+	SendDat(0x00);
+	SendDat(0x07);
+	SendDat(0x1E);
+	SendDat(0x2A);
+	SendDat(0x32);
+	SendDat(0x10);
+	SendDat(0x16);
+	SendDat(0x36);
+	SendDat(0x3C);
+	SendDat(0x3B);
+	SendDat(0x22);
+	SendDat(0x22);
 
-	wr_cmd8(0xF9);//Positive Gamma Control Register for Green
-	wr_data8(0x80);
-	wr_data8(0x00);
-	wr_data8(0x00);
-	wr_data8(0x05);
-	wr_data8(0x0D);
-	wr_data8(0x1F);
-	wr_data8(0x26);
-	wr_data8(0x2D);
-	wr_data8(0x14);
-	wr_data8(0x15);
-	wr_data8(0x26);
-	wr_data8(0x20);
-	wr_data8(0x01);
-	wr_data8(0x22);
-	wr_data8(0x22);
+	SendCom(0xF9);//Positive Gamma Control Register for Green
+	SendDat(0x80);
+	SendDat(0x00);
+	SendDat(0x00);
+	SendDat(0x05);
+	SendDat(0x0D);
+	SendDat(0x1F);
+	SendDat(0x26);
+	SendDat(0x2D);
+	SendDat(0x14);
+	SendDat(0x15);
+	SendDat(0x26);
+	SendDat(0x20);
+	SendDat(0x01);
+	SendDat(0x22);
+	SendDat(0x22);
 
-	wr_cmd8(0xFA);//Negative Gamma Control Register for Green
-	wr_data8(0x80);
-	wr_data8(0x00);
-	wr_data8(0x00);
-	wr_data8(0x00);
-	wr_data8(0x07);
-	wr_data8(0x1E);
-	wr_data8(0x2A);
-	wr_data8(0x32);
-	wr_data8(0x10);
-	wr_data8(0x16);
-	wr_data8(0x36);
-	wr_data8(0x3C);
-	wr_data8(0x3B);
-	wr_data8(0x22);
-	wr_data8(0x22);
+	SendCom(0xFA);//Negative Gamma Control Register for Green
+	SendDat(0x80);
+	SendDat(0x00);
+	SendDat(0x00);
+	SendDat(0x00);
+	SendDat(0x07);
+	SendDat(0x1E);
+	SendDat(0x2A);
+	SendDat(0x32);
+	SendDat(0x10);
+	SendDat(0x16);
+	SendDat(0x36);
+	SendDat(0x3C);
+	SendDat(0x3B);
+	SendDat(0x22);
+	SendDat(0x22);
 
-	wr_cmd8(0xFB);//Positive Gamma Control Register for Blue
-	wr_data8(0x80);
-	wr_data8(0x00);
-	wr_data8(0x00);
-	wr_data8(0x05);
-	wr_data8(0x0D);
-	wr_data8(0x1F);
-	wr_data8(0x26);
-	wr_data8(0x2D);
-	wr_data8(0x14);
-	wr_data8(0x15);
-	wr_data8(0x26);
-	wr_data8(0x20);
-	wr_data8(0x01);
-	wr_data8(0x22);
-	wr_data8(0x22);
+	SendCom(0xFB);//Positive Gamma Control Register for Blue
+	SendDat(0x80);
+	SendDat(0x00);
+	SendDat(0x00);
+	SendDat(0x05);
+	SendDat(0x0D);
+	SendDat(0x1F);
+	SendDat(0x26);
+	SendDat(0x2D);
+	SendDat(0x14);
+	SendDat(0x15);
+	SendDat(0x26);
+	SendDat(0x20);
+	SendDat(0x01);
+	SendDat(0x22);
+	SendDat(0x22);
 
-	wr_cmd8(0xFC);//Negative Gamma Control Register for Blue
-	wr_data8(0x80);
-	wr_data8(0x00);
-	wr_data8(0x00);
-	wr_data8(0x00);
-	wr_data8(0x07);
-	wr_data8(0x1E);
-	wr_data8(0x2A);
-	wr_data8(0x32);
-	wr_data8(0x10);
-	wr_data8(0x16);
-	wr_data8(0x36);
-	wr_data8(0x3C);
-	wr_data8(0x3B);
-	wr_data8(0x22);
-	wr_data8(0x22);
+	SendCom(0xFC);//Negative Gamma Control Register for Blue
+	SendDat(0x80);
+	SendDat(0x00);
+	SendDat(0x00);
+	SendDat(0x00);
+	SendDat(0x07);
+	SendDat(0x1E);
+	SendDat(0x2A);
+	SendDat(0x32);
+	SendDat(0x10);
+	SendDat(0x16);
+	SendDat(0x36);
+	SendDat(0x3C);
+	SendDat(0x3B);
+	SendDat(0x22);
+	SendDat(0x22);
 
-	//wr_cmd8(0x35);
-	wr_cmd8(0x34); //Tearing Effect Line OFF (34h)
+	//SendCom(0x35);
+	SendCom(0x34); //Tearing Effect Line OFF (34h)
 
-	wr_cmd8(0x36);//Memory Data Access Control (36h)
-	wr_data8(0x48);//08
+	SendCom(0x36);//Memory Data Access Control (36h)
+	SendDat(0x08);//48);//08
 
-	wr_cmd8(0x3A);//Interface Pixel Format (3Ah)
-	wr_data8(0x05);
+	SendCom(0x3A);//Interface Pixel Format (3Ah)
+	SendDat(0x77);
 
-	wr_cmd8(0xF2);//Display Control Register (F2h)
-	wr_data8(0x17);
-	wr_data8(0x17);
-	wr_data8(0x0F);
-	wr_data8(0x08);
-	wr_data8(0x08);
-	wr_data8(0x00);
-	wr_data8(0x00);
-	wr_data8(0x00);
-	wr_data8(0x00);
-	wr_data8(0x13);
-	wr_data8(0x00);
+	SendCom(0xF2);//Display Control Register (F2h)
+	SendDat(0x17);
+	SendDat(0x17);
+	SendDat(0x0F);
+	SendDat(0x08);
+	SendDat(0x08);
+	SendDat(0x00);
+	SendDat(0x00);
+	SendDat(0x00);
+	SendDat(0x06);
+	SendDat(0x13);
+	SendDat(0x00);
 
-	wr_cmd8(0xF6);//Interface Control Register (F6h)
-	wr_data8(0x00);
-	wr_data8(0x08);
-	wr_data8(0x00);
-	wr_data8(0x00);
+	SendCom(0xF6);//Interface Control Register (F6h)
+	SendDat(0x00);
+	SendDat(0x00);
+	SendDat(0x00);
+	SendDat(0x00);
 
-	wr_cmd8(0xFD);//Gate Control Register (FDh)
-	wr_data8(0x02);
-	wr_data8(0x01); //240*400
+	SendCom(0xFD);//Gate Control Register (FDh)
+	SendDat(0x02);
+	SendDat(0x01); //240*400
 
 	HAL_Delay(20);
 
-	wr_cmd8(0x29);//Display On (29h)
+	SendCom(0x29);//Display On (29h)
 	HAL_Delay(20);
-
 }
-void LCDclear2(char color_r,char color_g,char color_b){
-	for(int i=0;i<240;i++){
-		for(int j=0;j<400;j++){
-			SendCom(0x2C);
-			SendDat(color_r);
-			SendDat(color_g);
-			SendDat(color_b);
-		}
-	}
-}
-void LCDclear(char mode) {
+void LCDclear(char mode,char color_r,char color_g, char color_b) {
 	unsigned long int i;
 	SendCom(0x2A + mode);//
 	SendDat(0);
@@ -267,37 +241,10 @@ void LCDclear(char mode) {
 	SendDat(0);
 	SendDat(240);//240
 	SendCom(0x2C);//Memory Write (2Ch)
-	for (i = 0; i < 9600; i++) {//(400*240)=96000pixel, 3byte per pixel 9600*10*3byte
-		wr_data8(0xFF);
-		wr_data8(0xFF);
-		wr_data8(0xFF);
-		wr_data8(0xFF);
-		wr_data8(0xFF);
-		wr_data8(0xFF);
-		wr_data8(0xFF);
-		wr_data8(0xFF);
-		wr_data8(0xFF);
-		wr_data8(0xFF);
-		wr_data8(0xFF);
-		wr_data8(0xFF);
-		wr_data8(0xFF);
-		wr_data8(0xFF);
-		wr_data8(0xFF);
-		wr_data8(0xFF);
-		wr_data8(0xFF);
-		wr_data8(0xFF);
-		wr_data8(0xFF);
-		wr_data8(0xFF);
-		wr_data8(0xFF);
-		wr_data8(0xFF);
-		wr_data8(0xFF);
-		wr_data8(0xFF);
-		wr_data8(0xFF);
-		wr_data8(0xFF);
-		wr_data8(0xFF);
-		wr_data8(0xFF);
-		wr_data8(0xFF);
-		wr_data8(0xFF);
+	for (i = 0; i < 96000; i++) {//(400*240)=96000pixel, 3byte per pixel 9600*10*3byte
+		SendDat(color_r);
+		SendDat(color_g);
+		SendDat(color_b);
 	}
 }
 //**********************************************************************************************************
@@ -322,24 +269,24 @@ void LCDchar0(unsigned int x, unsigned int y, char c, char color_r,	char color_g
 
 	SendCom(0x2C);
 
-	for (h = 0; h < 14; h++) // Đ´Đ»ŃŹ ĐşĐ°Đ¶Đ´ĐľĐą ĐşĐľĐ»ĐľĐ˝ĐşĐ¸ Ń�Đ¸ĐĽĐ˛ĐľĐ»Đ°
+	for (h = 0; h < 14; h++) //
 			{
-		ch = font[c][0 + h];		// Đ˝Đ°Ń‡Đ°Đ»Đľ ĐľĐ±Ń€Đ°Đ·Đ° Ń�Đ¸ĐĽĐ˛ĐľĐ»Đ°
-		mask = 0x80;			// Đ˝Đ°Ń‡Đ˝ĐµĐĽ Ń� Đ»ĐµĐ˛ĐľĐłĐľ ĐżĐ¸ĐşŃ�ĐµĐ»ŃŹ
+		ch = font[c][0 + h];		//
+		mask = 0x80;			//
 		for (p = 0; p < 8; p++)  	// write the pixels
 				{
-			if (ch & mask) // ĐµŃ�Đ»Đ¸ ŃŤŃ‚Đľ Ń�Đ¸ĐĽĐ˛ĐľĐ» Ń€Đ¸Ń�Ń�ĐµĐĽ ĐµĐłĐľ ĐżĐ¸ĐşŃ�ĐµĐ»ŃŚ
+			if (ch & mask) //
 					{
 				SendDat(color_r);
 				SendDat(color_g);
 				SendDat(color_b);
-			} else		// ĐµŃ�Đ»Đ¸ ŃŤŃ‚Đľ Ń„ĐľĐ˝ Ń€Đ¸Ń�Ń�ĐµĐĽ Ń†Đ˛ĐµŃ‚ Ń„ĐľĐ˝Đ°
+			} else		//
 			{
 				SendDat(bgcolor_r);
 				SendDat(bgcolor_g);
 				SendDat(bgcolor_b);
 			}
-			mask = mask / 2;			//  Ń�Đ»ĐµĐ´Ń�ŃŽŃ‰Đ¸Đą ĐżĐ¸ĐşŃ�ĐµĐ»ŃŚ
+			mask = mask / 2;			//
 		}
 	}
 }

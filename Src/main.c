@@ -66,7 +66,7 @@ extern GUI_TIMER_TIME OS_TimeMS;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 void Encoder_GPIOInit(void);
-
+extern void S6D04D1init(void);
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
 void MainTask3(void);
@@ -105,26 +105,11 @@ int main(void)
   MX_CRC_Init();
   /* USER CODE BEGIN 2 */
   S6D04D1init();
-  LCDclear(1);
-  for(int i=0;i<240;i++){
-		SendCom(0x2A);//Column Address Set (2Ah)
-		SendDat(hi(i));
-		SendDat(lo(i));
-		SendDat(hi(i));
-		SendDat(lo(i));
-
-		SendCom(0x2B);//Page Address Set (2Bh)
-		SendDat(hi(i));
-		SendDat(lo(i));
-		SendDat(hi(i));
-		SendDat(lo(i));
-
-		SendCom(0x2C);//Memory Write (2Ch)
-		SendDat(0x00);
-		SendDat(0x00);
-		SendDat(0x00);
-  }
-
+  LCDclear(1,0x00,0x00,0x00);
+  Line(0, 0, 239, 399, 0xFF,0xFF,0xFF);
+  Line(0, 0, 239, 239, 0x00,0x00,0xFF);
+  Line(239, 0, 0, 239, 0x00,0xFF,0x00);
+  Line(0,399 , 239, 160, 0xFF,0x00,0x00);
   while(1){
 
   }
