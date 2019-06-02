@@ -261,7 +261,6 @@ void SetWindow(unsigned int Xs, unsigned int Ys, unsigned int Xe,unsigned int Ye
 	SendDat(lo(Ye));
 }
 /*-----------------------------------------------------------------------------------------------------*/
-/////////////////////////////////////////////////////////////////////
 void LCDchar0(unsigned int x, unsigned int y, char c, char color_r,	char color_g, char color_b, char bgcolor_r, char bgcolor_g,char bgcolor_b) {
 	char h, ch, p, mask;
 
