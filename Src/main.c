@@ -51,7 +51,6 @@
 #include "stm32f4xx_hal.h"
 #include "crc.h"
 #include "tim.h"
-#include "lcd_ls022.h"
 /* USER CODE BEGIN Includes */
 #include "GUI.h"
 /* USER CODE END Includes */
@@ -69,7 +68,7 @@ void Encoder_GPIOInit(void);
 extern void S6D04D1init(void);
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
-void MainTask3(void);
+extern void MainTask2(void);
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
@@ -104,12 +103,9 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_CRC_Init();
   /* USER CODE BEGIN 2 */
-  S6D04D1init();
-  LCDclear(1,0x00,0x00,0x00);
-  Line(0, 0, 239, 399, 0xFF,0xFF,0xFF);
-  Line(0, 0, 239, 239, 0x00,0x00,0xFF);
-  Line(239, 0, 0, 239, 0x00,0xFF,0x00);
-  Line(0,399 , 239, 160, 0xFF,0x00,0x00);
+  GUI_Init();
+  //MainTask2();
+  GUI_Clear();
   while(1){
 
   }

@@ -54,7 +54,7 @@
 *       _aDialogCreate
 */
 static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
-  { WINDOW_CreateIndirect, "Window", ID_WINDOW_0, 0, 0, 320, 240, 0, 0x0, 0 },
+  { WINDOW_CreateIndirect, "Window", ID_WINDOW_0, 0, 0, 240, 400, 0, 0x0, 0 },
   { BUTTON_CreateIndirect, "hello", ID_BUTTON_0, 60, 18, 200, 40, 0, 0x0, 0 },
   { GRAPH_CreateIndirect, "Graph", ID_GRAPH_0, 0, 70, 320, 120, 0, 0x0, 0 },
   { SLIDER_CreateIndirect, "Slider", ID_SLIDER_0, 0, 210, 320, 30, 0, 0x0, 0 },
@@ -154,7 +154,7 @@ void MainTask2(void) {
 	U8 i = 0;
 	PROGBAR_Handle hProgBar;
 	GUI_DispStringAt("Progress bar", 150, 50);
-	hProgBar = PROGBAR_Create(10, 90, 300, 60, WM_CF_SHOW);
+	hProgBar = PROGBAR_Create(10, 90, 200, 60, WM_CF_SHOW);
 	while (1) {
 		PROGBAR_SetBarColor(hProgBar, 0, GUI_RED);
 		PROGBAR_SetValue(hProgBar, i);
@@ -170,9 +170,9 @@ void MainTask(void) {
 	//CreateWindow();
 	U8 i = 0;
 	PROGBAR_Handle RProgBar,GProgBar,BProgBar;
-	RProgBar = PROGBAR_Create(10, 25, 300, 50, WM_CF_SHOW);
-	GProgBar = PROGBAR_Create(10, 95, 300, 50, WM_CF_SHOW);
-	BProgBar = PROGBAR_Create(10, 165, 300, 50, WM_CF_SHOW);
+	RProgBar = PROGBAR_Create(10, 25, 200, 50, WM_CF_SHOW);
+	GProgBar = PROGBAR_Create(10, 95, 200, 50, WM_CF_SHOW);
+	BProgBar = PROGBAR_Create(10, 165, 200, 50, WM_CF_SHOW);
 	PROGBAR_SKINFLEX_PROPS pProps;
 	PROGBAR_GetSkinFlexProps(&pProps,0);
 	while (1) {

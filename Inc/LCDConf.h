@@ -50,16 +50,9 @@ Purpose     : Display driver configuration file
   *
   ******************************************************************************
   */
-
+#include "S6D04D1.h"
 #ifndef LCDCONF_H
 #define LCDCONF_H
-#define	LCD_DATA_PORT				GPIOB
-#define	LCD_CONTROL_PORT			GPIOA
-#define LCD_RD_PIN					GPIO_PIN_8
-#define LCD_WR_PIN					GPIO_PIN_9
-#define LCD_CD_PIN					GPIO_PIN_10
-#define LCD_CS_PIN					GPIO_PIN_11
-#define LCD_RST_PIN					GPIO_PIN_12
-#endif /* LCDCONF_H */
 
+#endif /* LCDCONF_H */
 /*************************** End of file ****************************/

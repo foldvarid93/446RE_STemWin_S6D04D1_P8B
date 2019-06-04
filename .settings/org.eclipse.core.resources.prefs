@@ -1,5 +1,4 @@
 eclipse.preferences.version=1
-encoding//Inc/lcd_ls022.h=UTF-8
-encoding//Src/LCDConf_FlexColor.c=UTF-8
-encoding//Src/lcd_ls022.c=UTF-8
+encoding//Src/LCDConf.c=UTF-8
+encoding//Src/S6D04D1.c=UTF-8
 encoding//Src/main.c=UTF-8
