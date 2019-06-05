@@ -60,6 +60,11 @@ Purpose     : Template driver, could be used as starting point for new
 *
 **********************************************************************
 */
+#define LCD_MIRROR_X 0
+#define LCD_MIRROR_Y 0
+#define LCD_XSIZE 240
+#define LCD_YSIZE 400
+
 /*********************************************************************
 *
 *       Macros for MIRROR_, SWAP_ and LUT_
@@ -155,18 +160,19 @@ static void _SetPixelIndex(GUI_DEVICE * pDevice, int x, int y, int PixelIndex) {
         //Draw_Pixel(x,y,PixelIndex);
         // Move cursor
     	LcdWriteReg(0x2B);//
-    	LcdWriteData(0);
-        LcdWriteData(0);
+    	LcdWriteData(x>>8);
+        LcdWriteData((U8)x);
         LcdWriteData(x>>8);//x>>8
         LcdWriteData((U8)x);//400
         LcdWriteReg(0x2A);//
-        LcdWriteData(0);
-        LcdWriteData(0);//
+        LcdWriteData(y>>8);
+        LcdWriteData((U8)y);//
         LcdWriteData(y>>8);//
         LcdWriteData((U8)y);//240
         LcdWriteReg(0x2C);//Memory Write (2Ch)
-        LcdWriteData(PixelIndex>>8);
-        LcdWriteData((U8)PixelIndex);
+        LcdWriteData((U8)PixelIndex>>9);//R
+        LcdWriteData((U8)PixelIndex>>6);//G
+        LcdWriteData((U8)PixelIndex);//B
     }
     #if (LCD_MIRROR_X == 0) && (LCD_MIRROR_Y == 0) && (LCD_SWAP_XY == 0)
       #undef xPhys
@@ -841,5 +847,4 @@ const GUI_DEVICE_API GUIDRV_Template_API = {
   _GetDevData,
   _GetRect,
 };
-
 /*************************** End of file ****************************/

@@ -54,5 +54,6 @@ Purpose     : Display driver configuration file
 #ifndef LCDCONF_H
 #define LCDCONF_H
 
+
 #endif /* LCDCONF_H */
 /*************************** End of file ****************************/

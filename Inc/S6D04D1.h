@@ -1,7 +1,11 @@
 #ifndef LCDCONF_H
 #define LCDCONF_H
+
 #include "GUI.h"
 #include "stm32f4xx.h"
+#include "LCD_Private.h"
+#include "GUI_Private.h"
+#include "LCD_ConfDefaults.h"
 
 #define	LCD_DATA_PORT				GPIOB
 #define	LCD_CONTROL_PORT			GPIOA
@@ -18,5 +22,5 @@ void LcdWriteDataMultiple(U8 * pData, int NumItems);
 void LcdReadDataMultiple(U8 * pData, int NumItems);
 void GPIO_Init(void);
 void LcdInit(void);
-
+void LcdClear(char mode,char color_r,char color_g, char color_b);
 #endif

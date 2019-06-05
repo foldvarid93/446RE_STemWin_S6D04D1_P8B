@@ -60,10 +60,10 @@ Purpose     : Valid LCD configuration and defaults
 *       Configuration defaults
 */
 #ifndef   LCD_MIRROR_X
-  #define LCD_MIRROR_X 0
+  #define LCD_MIRROR_X 1
 #endif
 #ifndef   LCD_MIRROR_Y
-  #define LCD_MIRROR_Y 0
+  #define LCD_MIRROR_Y 1
 #endif
 #ifndef   LCD_SWAP_XY
   #define LCD_SWAP_XY 0

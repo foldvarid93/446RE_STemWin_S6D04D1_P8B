@@ -318,4 +318,30 @@ void LcdInit(void) {
 	LcdWriteReg(0x29);//Display On (29h)
 	HAL_Delay(20);
 }
+/********************************************************************
+*
+* S6D04D1 driver init
+*
+* Function description:
+*
+*/
+void LcdClear(char mode,char color_r,char color_g, char color_b) {
+		unsigned long int i;
+		LcdWriteReg(0x2A + mode);//
+		LcdWriteData(0);
+		LcdWriteData(0);
+		LcdWriteData(1);
+		LcdWriteData(0x90);//400
 
+		LcdWriteReg(0x2b - mode);//
+		LcdWriteData(0);
+		LcdWriteData(0);//
+		LcdWriteData(0);
+		LcdWriteData(240);//240
+		LcdWriteReg(0x2C);//Memory Write (2Ch)
+		for (i = 0; i < 96000; i++) {//(400*240)=96000pixel, 3byte per pixel 9600*10*3byte
+			LcdWriteData(color_r);
+			LcdWriteData(color_g);
+			LcdWriteData(color_b);
+	 	}
+}

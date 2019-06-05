@@ -104,8 +104,11 @@ int main(void)
   MX_CRC_Init();
   /* USER CODE BEGIN 2 */
   GUI_Init();
-  //MainTask2();
-  GUI_Clear();
+  //LcdInit();
+  LcdClear(1,0x00,0x00,0x00);
+  MainTask2();
+  //GUI_Clear();
+  //GUI_DrawCircle(100,100,20);
   while(1){
 
   }

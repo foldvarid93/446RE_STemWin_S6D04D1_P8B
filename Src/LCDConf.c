@@ -55,6 +55,7 @@ Purpose     : Display controller configuration (single layer)
 #include "GUI.h"
 #include "stm32f4xx.h"
 #include "GUIDRV_Template.h"
+#include "GUIDRV_FlexColor.h"
 /*********************************************************************
 *
 *       Layer configuration (to be modified)
@@ -65,8 +66,8 @@ Purpose     : Display controller configuration (single layer)
 //
 // Physical display size
 //
-#define XSIZE_PHYS  240 // To be adapted to x-screen size
-#define YSIZE_PHYS  400 // To be adapted to y-screen size
+#define XSIZE_PHYS  400 // To be adapted to x-screen size
+#define YSIZE_PHYS  240 // To be adapted to y-screen size
 
 /*********************************************************************
 *
@@ -114,6 +115,7 @@ void LCD_X_Config(void) {
   // Set display driver and color conversion
   //
   pDevice = GUI_DEVICE_CreateAndLink(GUIDRV_TEMPLATE, GUICC_565, 0, 0);//16bit color flexcolor driver
+  //pDevice = GUI_DEVICE_CreateAndLink(GUIDRV_FLEXCOLOR, GUICC_565 , 0, 0);
   //
   // Display driver configuration, required for Lin-driver
   //
@@ -130,14 +132,9 @@ void LCD_X_Config(void) {
   PortAPI.pfWriteM8_A1  = LcdWriteDataMultiple;
   PortAPI.pfRead8_A1  = LcdReadReg;
   PortAPI.pfReadM8_A1 = LcdReadDataMultiple;
-/*
-  PortAPI.pfWrite16_A0  = LcdWriteReg;
-  PortAPI.pfWrite16_A1  = LcdWriteData;
-  PortAPI.pfWriteM16_A1 = LcdWriteDataMultiple;
-  PortAPI.pfReadM16_A1  = LcdReadDataMultiple;
-*/
-  //GUIDRV_HX8352C_SetFunc(pDevice, &hwAPI);
-  //GUIDRV_FlexColor_SetFunc(pDevice, &PortAPI, GUIDRV_Template_API, GUIDRV_FLEXCOLOR_M16C0B8);//ILI9341, 16bit color, 8 bit bus, no cache
+  //GUIDRV_FlexColor_SetFunc(pDevice, &PortAPI, GUIDRV_F, GUIDRV_FLEXCOLOR_M16C0B8);//ILI9341, 16bit color, 8 bit bus, no cache
+  //GUIDRV_SetFunc(pDevice, &PortAPI);
+  //GUIDRV_FlexColor_SetFunc(pDevice, &PortAPI, GUIDRV_FLEXCOLOR_F66709 , GUIDRV_FLEXCOLOR_M16C0B8 );
 }
 
 /*********************************************************************
