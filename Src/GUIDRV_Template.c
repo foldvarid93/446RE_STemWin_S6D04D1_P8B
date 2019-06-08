@@ -170,9 +170,12 @@ static void _SetPixelIndex(GUI_DEVICE * pDevice, int x, int y, int PixelIndex) {
         LcdWriteData(y>>8);//
         LcdWriteData((U8)y);//240
         LcdWriteReg(0x2C);//Memory Write (2Ch)
-        LcdWriteData((U8)PixelIndex>>9);//R
-        LcdWriteData((U8)PixelIndex>>6);//G
-        LcdWriteData((U8)PixelIndex);//B
+        LcdWriteData((U8)PixelIndex>>8);
+        LcdWriteData((U8)PixelIndex);
+        //LcdWriteData(0xFF);
+        //LcdWriteData((((U8)PixelIndex>>12)&0B00111111) | (((U8)PixelIndex>>9) & 0B11000000));//R
+       //LcdWriteData((((U8)PixelIndex>>5) &0B00111111) | (((U8)PixelIndex>>3) & 0B11000000));//G
+        //LcdWriteData(((U8)PixelIndex&0B00111111)| (((U8)PixelIndex<<2)&11000000));//B
     }
     #if (LCD_MIRROR_X == 0) && (LCD_MIRROR_Y == 0) && (LCD_SWAP_XY == 0)
       #undef xPhys

@@ -14,11 +14,12 @@
 *   Sets display register
 */
 void LcdWriteReg(U8 Data) {
-	HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_CD_PIN, GPIO_PIN_RESET); //DC_Write(0);
+	HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_CD_PIN, GPIO_PIN_RESET); //DC=0
+	HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_RD_PIN, GPIO_PIN_SET); //RD=1
+	HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_WR_PIN, GPIO_PIN_RESET); //WR=0
 	LCD_DATA_PORT->ODR &= 0xFFFFFF00;
-	LCD_DATA_PORT->ODR |= Data; //LCD_DATA_Write(com);
-	HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_WR_PIN, GPIO_PIN_RESET); //WR_Write(0);
-	HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_WR_PIN, GPIO_PIN_SET); //WR_Write(1);
+	LCD_DATA_PORT->ODR |= Data;
+	HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_WR_PIN, GPIO_PIN_SET); //WR=1
 }
 /********************************************************************
 *
@@ -27,9 +28,15 @@ void LcdWriteReg(U8 Data) {
 * Function description:
 *   Sets display register
 */
-U8 LcdReadReg(void) {
-  // ... TBD by user
-	return 0;
+U8 LcdReadData(void) {
+	U8 data;
+	HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_CD_PIN, GPIO_PIN_SET); //DC=1
+	HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_WR_PIN, GPIO_PIN_SET); //WR=1
+	HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_RD_PIN, GPIO_PIN_RESET); //RD=0
+	U32 Input=LCD_DATA_PORT->IDR ;
+	data=(U8)(Input&0x000000FF);
+	HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_RD_PIN, GPIO_PIN_SET); //RD=1
+	return data;
 }
 /********************************************************************
 *
@@ -39,11 +46,12 @@ U8 LcdReadReg(void) {
 *   Writes a value to a display register
 */
 void LcdWriteData(U8 Data) {
-	HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_CD_PIN, GPIO_PIN_SET); //DC_Write(1);
+	HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_CD_PIN, GPIO_PIN_SET); //DC=1
+	HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_RD_PIN, GPIO_PIN_SET); //RD=1
+	HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_WR_PIN, GPIO_PIN_RESET); //WR=0
 	LCD_DATA_PORT->ODR &= 0xFFFFFF00;
 	LCD_DATA_PORT->ODR |= Data; //LCD_DATA_Write(dat);
-	HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_WR_PIN, GPIO_PIN_RESET); //WR_Write(0);
-	HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_WR_PIN, GPIO_PIN_SET); //WR_Write(1);
+	HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_WR_PIN, GPIO_PIN_SET); //WR=1
 }
 /********************************************************************
 *
@@ -53,13 +61,13 @@ void LcdWriteData(U8 Data) {
 *   Writes multiple values to a display register.
 */
 void LcdWriteDataMultiple(U8 * pData, int NumItems) {
-	//LCD_CONTROL_PORT->BSRR=0x08000000;//CS:Low
   while (NumItems--) {
-		HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_CD_PIN, GPIO_PIN_SET); //DC_Write(1);
+		HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_CD_PIN, GPIO_PIN_SET); //DC=1
+		HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_RD_PIN, GPIO_PIN_SET); //RD=1
+		HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_WR_PIN, GPIO_PIN_RESET); //WR=0
 		LCD_DATA_PORT->ODR &= 0xFFFFFF00;
-		LCD_DATA_PORT->ODR |= *pData++; //LCD_DATA_Write(dat);
-		HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_WR_PIN, GPIO_PIN_RESET); //WR_Write(0);
-		HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_WR_PIN, GPIO_PIN_SET); //WR_Write(1);
+		LCD_DATA_PORT->ODR |= *pData++;
+		HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_WR_PIN, GPIO_PIN_SET); //WR=1
   }
 }
 /********************************************************************
@@ -72,8 +80,26 @@ void LcdWriteDataMultiple(U8 * pData, int NumItems) {
 void LcdReadDataMultiple(U8 * pData, int NumItems) {
   while (NumItems--) {
     // ... TBD by user
+
   }
 }
+//ReadRegister
+void ReadReg(U8 Reg, U8 * pData, U8 NumItems) {
+	LcdWriteReg(Reg);
+	GPIO_InitTypeDef GPIO_InitStruct;
+	GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7;
+	GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+	HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+	LcdReadData();
+	while (NumItems--) {
+		*pData++=LcdReadData();
+
+	}
+	GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7;
+	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+	HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+}
+//
 /********************************************************************
 *
 *       GPIO init
@@ -121,6 +147,10 @@ void LcdInit(void) {
 	HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_RST_PIN, GPIO_PIN_RESET); //RES_Write(0);
 	HAL_Delay(1);//1ms
 	HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_RST_PIN, GPIO_PIN_SET);	//RES_Write(1);
+
+	//
+	U8 array[5];
+	ReadReg(0x0C, array, 1);
 	//
 	LcdWriteReg(0xE0);//MDDI Control 1 (E0h)
 	LcdWriteData(0x01);//VWAKE_EN=1, When VWAKE_EN is 1, client initiated wake-up is enabled
@@ -280,15 +310,20 @@ void LcdInit(void) {
 	LcdWriteData(0x3B);
 	LcdWriteData(0x22);
 	LcdWriteData(0x22);
+//
+	LcdWriteReg(0x0C);
+
+	//
 
 	//LcdWriteReg(0x35);
 	LcdWriteReg(0x34); //Tearing Effect Line OFF (34h)
 
 	LcdWriteReg(0x36);//Memory Data Access Control (36h)
-	LcdWriteData(0x08);//48);//08
+	LcdWriteData(0x00);//48);//08
 
 	LcdWriteReg(0x3A);//Interface Pixel Format (3Ah)
-	LcdWriteData(0x77);
+	LcdWriteData(0x55);//(0x77);
+	ReadReg(0x0C, array, 1);//
 
 	LcdWriteReg(0xF2);//Display Control Register (F2h)
 	LcdWriteData(0x17);
@@ -305,9 +340,10 @@ void LcdInit(void) {
 
 	LcdWriteReg(0xF6);//Interface Control Register (F6h)
 	LcdWriteData(0x00);
+	LcdWriteData(0x80);
 	LcdWriteData(0x00);
 	LcdWriteData(0x00);
-	LcdWriteData(0x00);
+	ReadReg(0xF6, array, 4);//
 
 	LcdWriteReg(0xFD);//Gate Control Register (FDh)
 	LcdWriteData(0x02);

@@ -156,7 +156,7 @@ void MainTask2(void) {
 	GUI_DispStringAt("Progress bar", 150, 50);
 	hProgBar = PROGBAR_Create(10, 90, 200, 60, WM_CF_SHOW);
 	while (1) {
-		PROGBAR_SetBarColor(hProgBar, 0, GUI_RED);
+		PROGBAR_SetBarColor(hProgBar, 0, GUI_GREEN);
 		PROGBAR_SetValue(hProgBar, i);
 		GUI_Exec();
 		GUI_Delay(200);

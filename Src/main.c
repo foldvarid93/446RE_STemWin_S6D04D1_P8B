@@ -66,6 +66,9 @@ extern GUI_TIMER_TIME OS_TimeMS;
 void SystemClock_Config(void);
 void Encoder_GPIOInit(void);
 extern void S6D04D1init(void);
+extern void LcdWriteReg(U8 Data);
+extern void LcdClear(char mode,char color_r,char color_g, char color_b);
+
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
 extern void MainTask2(void);
@@ -104,9 +107,48 @@ int main(void)
   MX_CRC_Init();
   /* USER CODE BEGIN 2 */
   GUI_Init();
+  GUI_Clear();
   //LcdInit();
-  LcdClear(1,0x00,0x00,0x00);
-  MainTask2();
+  //LcdClear(1,0xFF,0xFF,0xFF);
+  //MainTask2();
+  U16 x=10;
+  U16 y=10;
+  U16 x1=x;
+  U16 y1=y;
+  U16 R=0x00;
+  U16 G=0xFF;
+  U16 B=0x00;
+  U16 dx=380;
+  U16 dy=220;
+  //U16 P=0xF800;//B
+  U16 P=0x07E0;//G
+  //U16 P=0x001F;//R
+  for(U16 i=0;i<dy;i++){
+	  y1=y+i;
+	  for(U16 j=0;j<dx;j++){
+		  x1=x+j;
+		  LcdWriteReg(0x2B);//
+		  LcdWriteData(x1>>8);//start upper byte
+		  LcdWriteData((U8)x1);//start lower byte
+
+		  LcdWriteData(x1>>8);//end upper byte
+		  LcdWriteData((U8)x1);//end lower byte
+
+		  LcdWriteReg(0x2A);//
+		  LcdWriteData(y1>>8);//start upper byte
+		  LcdWriteData((U8)y1);//start lower byte
+
+		  LcdWriteData(y1>>8);//end upper byte
+		  LcdWriteData((U8)y1);//end lower byte
+
+		  LcdWriteReg(0x2C);//Memory Write (2Ch)
+		  LcdWriteData((U8)(P>>8));
+		  LcdWriteData((U8)P);
+		  //LcdWriteData(B);
+	  }
+  }
+
+
   //GUI_Clear();
   //GUI_DrawCircle(100,100,20);
   while(1){

@@ -130,8 +130,9 @@ void LCD_X_Config(void) {
   PortAPI.pfWrite8_A0  = LcdWriteReg;
   PortAPI.pfWrite8_A1  = LcdWriteData;
   PortAPI.pfWriteM8_A1  = LcdWriteDataMultiple;
-  PortAPI.pfRead8_A1  = LcdReadReg;
-  PortAPI.pfReadM8_A1 = LcdReadDataMultiple;
+
+  PortAPI.pfRead8_A1  = LcdReadData;
+  //PortAPI.pfReadM8_A1 = LcdReadDataMultiple;
   //GUIDRV_FlexColor_SetFunc(pDevice, &PortAPI, GUIDRV_F, GUIDRV_FLEXCOLOR_M16C0B8);//ILI9341, 16bit color, 8 bit bus, no cache
   //GUIDRV_SetFunc(pDevice, &PortAPI);
   //GUIDRV_FlexColor_SetFunc(pDevice, &PortAPI, GUIDRV_FLEXCOLOR_F66709 , GUIDRV_FLEXCOLOR_M16C0B8 );

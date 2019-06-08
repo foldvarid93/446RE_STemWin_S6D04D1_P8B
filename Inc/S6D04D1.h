@@ -16,11 +16,12 @@
 #define LCD_RST_PIN					GPIO_PIN_12
 
 void LcdWriteReg(U8 Data);
-U8 LcdReadReg(void);
+U8 LcdReadData(void);
 void LcdWriteData(U8 Data);
 void LcdWriteDataMultiple(U8 * pData, int NumItems);
 void LcdReadDataMultiple(U8 * pData, int NumItems);
 void GPIO_Init(void);
 void LcdInit(void);
 void LcdClear(char mode,char color_r,char color_g, char color_b);
+void ReadReg(U8 Reg, U8 * pData, U8 NumItems);
 #endif
