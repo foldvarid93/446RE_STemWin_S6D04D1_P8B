@@ -68,7 +68,8 @@ void Encoder_GPIOInit(void);
 extern void S6D04D1init(void);
 extern void LcdWriteReg(U8 Data);
 extern void LcdClear(char mode,char color_r,char color_g, char color_b);
-
+extern void DrawPixel(U16 x,U16 y,U16 color);
+extern void LcdInit(void);
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
 extern void MainTask2(void);
@@ -108,16 +109,24 @@ int main(void)
   /* USER CODE BEGIN 2 */
   GUI_Init();
   GUI_Clear();
+  //GUI_SetOrientation(GUI_MIRROR_X|GUI_MIRROR_Y);
+  MainTask2();
+  //
+  DrawPixel(10,10,0xFFFF);
+  DrawPixel(390,10,0xFFFF);
+  DrawPixel(10,230,0xFFFF);
+  DrawPixel(390,230,0xFFFF);
+  GUI_SetColor(0xFFFF);
+  GUI_DrawPixel(20,20);
+  GUI_DrawPixel(380,20);
+  GUI_DrawPixel(20,220);
+  GUI_DrawPixel(380,220);
   //LcdInit();
-  //LcdClear(1,0xFF,0xFF,0xFF);
-  //MainTask2();
+  LcdClear(1,0xFF,0xFF,0xFF);
   U16 x=10;
   U16 y=10;
   U16 x1=x;
   U16 y1=y;
-  U16 R=0x00;
-  U16 G=0xFF;
-  U16 B=0x00;
   U16 dx=380;
   U16 dy=220;
   //U16 P=0xF800;//B
@@ -127,26 +136,10 @@ int main(void)
 	  y1=y+i;
 	  for(U16 j=0;j<dx;j++){
 		  x1=x+j;
-		  LcdWriteReg(0x2B);//
-		  LcdWriteData(x1>>8);//start upper byte
-		  LcdWriteData((U8)x1);//start lower byte
-
-		  LcdWriteData(x1>>8);//end upper byte
-		  LcdWriteData((U8)x1);//end lower byte
-
-		  LcdWriteReg(0x2A);//
-		  LcdWriteData(y1>>8);//start upper byte
-		  LcdWriteData((U8)y1);//start lower byte
-
-		  LcdWriteData(y1>>8);//end upper byte
-		  LcdWriteData((U8)y1);//end lower byte
-
-		  LcdWriteReg(0x2C);//Memory Write (2Ch)
-		  LcdWriteData((U8)(P>>8));
-		  LcdWriteData((U8)P);
-		  //LcdWriteData(B);
+		  DrawPixel(x1,y1,P);
 	  }
   }
+
 
 
   //GUI_Clear();

@@ -24,4 +24,5 @@ void GPIO_Init(void);
 void LcdInit(void);
 void LcdClear(char mode,char color_r,char color_g, char color_b);
 void ReadReg(U8 Reg, U8 * pData, U8 NumItems);
+void DrawPixel(U16 x,U16 y,U16 color);
 #endif

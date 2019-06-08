@@ -356,7 +356,7 @@ void LcdInit(void) {
 }
 /********************************************************************
 *
-* S6D04D1 driver init
+* clear screen
 *
 * Function description:
 *
@@ -380,4 +380,30 @@ void LcdClear(char mode,char color_r,char color_g, char color_b) {
 			LcdWriteData(color_g);
 			LcdWriteData(color_b);
 	 	}
+}
+/********************************************************************
+*
+* draw pixel
+*
+* Function description:
+*
+*/
+void DrawPixel(U16 x,U16 y,U16 color) {
+	  LcdWriteReg(0x2B);//
+	  LcdWriteData(x>>8);//start upper byte
+	  LcdWriteData((U8)x);//start lower byte
+
+	  LcdWriteData(x>>8);//end upper byte
+	  LcdWriteData((U8)x);//end lower byte
+
+	  LcdWriteReg(0x2A);//
+	  LcdWriteData(y>>8);//start upper byte
+	  LcdWriteData((U8)y);//start lower byte
+
+	  LcdWriteData(y>>8);//end upper byte
+	  LcdWriteData((U8)y);//end lower byte
+
+	  LcdWriteReg(0x2C);//Memory Write (2Ch)
+	  LcdWriteData((U8)(color>>8));
+	  LcdWriteData((U8)color);
 }

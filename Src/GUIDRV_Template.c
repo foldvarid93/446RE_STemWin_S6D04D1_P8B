@@ -155,27 +155,21 @@ static void _SetPixelIndex(GUI_DEVICE * pDevice, int x, int y, int PixelIndex) {
     GUI_USE_PARA(y);
     GUI_USE_PARA(PixelIndex);
     {
-      //
-      // Write into hardware ... Adapt to your system
-        //Draw_Pixel(x,y,PixelIndex);
-        // Move cursor
     	LcdWriteReg(0x2B);//
-    	LcdWriteData(x>>8);
-        LcdWriteData((U8)x);
-        LcdWriteData(x>>8);//x>>8
-        LcdWriteData((U8)x);//400
+    	LcdWriteData((U8)(x>>8));//
+        LcdWriteData((U8)x);//
+        LcdWriteData((U8)(x>>8));//
+        LcdWriteData((U8)x);//
+
         LcdWriteReg(0x2A);//
-        LcdWriteData(y>>8);
+        LcdWriteData((U8)(y>>8));//
         LcdWriteData((U8)y);//
-        LcdWriteData(y>>8);//
-        LcdWriteData((U8)y);//240
+        LcdWriteData((U8)(y>>8));//
+        LcdWriteData((U8)y);//
+
         LcdWriteReg(0x2C);//Memory Write (2Ch)
-        LcdWriteData((U8)PixelIndex>>8);
-        LcdWriteData((U8)PixelIndex);
-        //LcdWriteData(0xFF);
-        //LcdWriteData((((U8)PixelIndex>>12)&0B00111111) | (((U8)PixelIndex>>9) & 0B11000000));//R
-       //LcdWriteData((((U8)PixelIndex>>5) &0B00111111) | (((U8)PixelIndex>>3) & 0B11000000));//G
-        //LcdWriteData(((U8)PixelIndex&0B00111111)| (((U8)PixelIndex<<2)&11000000));//B
+        LcdWriteData((U8)(PixelIndex>>8));//Upper byte
+        LcdWriteData((U8)PixelIndex);//Lower byte
     }
     #if (LCD_MIRROR_X == 0) && (LCD_MIRROR_Y == 0) && (LCD_SWAP_XY == 0)
       #undef xPhys

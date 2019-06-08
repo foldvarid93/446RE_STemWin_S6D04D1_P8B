@@ -68,7 +68,6 @@ Purpose     : Display controller configuration (single layer)
 //
 #define XSIZE_PHYS  400 // To be adapted to x-screen size
 #define YSIZE_PHYS  240 // To be adapted to y-screen size
-
 /*********************************************************************
 *
 *       Configuration checking
