@@ -13,12 +13,9 @@
 *   Sets display register
 */
 void LcdWriteReg(U8 Data) {
-	HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_CD_PIN, GPIO_PIN_RESET); //DC=0
-	//HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_RD_PIN, GPIO_PIN_SET); //RD=1
-	HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_WR_PIN, GPIO_PIN_RESET); //WR=0
-	LCD_DATA_PORT->ODR &= 0xFFFFFF00;
-	LCD_DATA_PORT->ODR |= Data;
-	HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_WR_PIN, GPIO_PIN_SET); //WR=1
+	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET|LCD_CD_PIN_RESET;//DC=0, WR=0
+	LCD_DATA_PORT->ODR = (LCD_DATA_PORT->ODR & 0xFFFFFF00)|Data;
+	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET;//WR=1
 }
 /********************************************************************
 *
@@ -29,12 +26,9 @@ void LcdWriteReg(U8 Data) {
 */
 U8 LcdReadData(void) {
 	U8 data;
-	HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_CD_PIN, GPIO_PIN_SET); //DC=1
-	//HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_WR_PIN, GPIO_PIN_SET); //WR=1
-	HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_RD_PIN, GPIO_PIN_RESET); //RD=0
-	//U32 Input=LCD_DATA_PORT->IDR ;
+	LCD_CONTROL_PORT->BSRR = LCD_RD_PIN_RESET|LCD_CD_PIN_SET;//DC=1, RD=0
 	data=(U8)(LCD_DATA_PORT->IDR&0x000000FF);
-	HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_RD_PIN, GPIO_PIN_SET); //RD=1
+	LCD_CONTROL_PORT->BSRR = LCD_RD_PIN_SET; //RD=1
 	return data;
 }
 /********************************************************************
@@ -45,12 +39,9 @@ U8 LcdReadData(void) {
 *   Writes a value to a display register
 */
 void LcdWriteData(U8 Data) {
-	HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_CD_PIN, GPIO_PIN_SET); //DC=1
-	//HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_RD_PIN, GPIO_PIN_SET); //RD=1
-	HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_WR_PIN, GPIO_PIN_RESET); //WR=0
-	LCD_DATA_PORT->ODR &= 0xFFFFFF00;
-	LCD_DATA_PORT->ODR |= Data; //LCD_DATA_Write(dat);
-	HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_WR_PIN, GPIO_PIN_SET); //WR=1
+	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET|LCD_CD_PIN_SET;//DC=1, WR=0
+	LCD_DATA_PORT->ODR = (LCD_DATA_PORT->ODR & 0xFFFFFF00)|Data;
+	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET;//WR=1
 }
 /********************************************************************
 *
@@ -60,14 +51,11 @@ void LcdWriteData(U8 Data) {
 *   Writes multiple values to a display register.
 */
 void LcdWriteDataMultiple(U8 * pData, int NumItems) {
-  while (NumItems--) {
-		HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_CD_PIN, GPIO_PIN_SET); //DC=1
-		//HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_RD_PIN, GPIO_PIN_SET); //RD=1
-		HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_WR_PIN, GPIO_PIN_RESET); //WR=0
-		LCD_DATA_PORT->ODR &= 0xFFFFFF00;
-		LCD_DATA_PORT->ODR |= *pData++;
-		HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_WR_PIN, GPIO_PIN_SET); //WR=1
-  }
+	while (NumItems--) {
+		LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET|LCD_CD_PIN_SET;//DC=1, WR=0
+		LCD_DATA_PORT->ODR = (LCD_DATA_PORT->ODR & 0xFFFFFF00)|*pData++;
+		LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET;//WR=1
+	}
 }
 /********************************************************************
 *
@@ -79,7 +67,6 @@ void LcdWriteDataMultiple(U8 * pData, int NumItems) {
 void LcdReadDataMultiple(U8 * pData, int NumItems) {
   while (NumItems--) {
     // ... TBD by user
-
   }
 }
 /********************************************************************
@@ -90,15 +77,25 @@ void LcdReadDataMultiple(U8 * pData, int NumItems) {
 *
 */
 void ReadReg(U8 Reg, U8 * pData, U8 NumItems) {
-	LcdWriteReg(Reg);
+	//send register address
+	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET|LCD_CD_PIN_RESET;//DC=0, WR=0
+	LCD_DATA_PORT->ODR = (LCD_DATA_PORT->ODR & 0xFFFFFF00)|Reg;
+	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET;//WR=1
+	//set port to input
 	GPIO_InitTypeDef GPIO_InitStruct;
 	GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7;
 	GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
 	HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-	LcdReadData();
+	//dummy read
+	LCD_CONTROL_PORT->BSRR = LCD_RD_PIN_RESET|LCD_CD_PIN_SET;//DC=1, RD=0
+	LCD_CONTROL_PORT->BSRR = LCD_RD_PIN_SET; //RD=1
+	//read
 	while (NumItems--) {
-		*pData++=LcdReadData();
+		LCD_CONTROL_PORT->BSRR = LCD_RD_PIN_RESET|LCD_CD_PIN_SET;//DC=1, RD=0
+		*pData++=(U8)(LCD_DATA_PORT->IDR&0x000000FF);
+		LCD_CONTROL_PORT->BSRR = LCD_RD_PIN_SET; //RD=1
 	}
+	//set port to output
 	GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7;
 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
 	HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
@@ -146,16 +143,13 @@ void GPIO_Init(void){
 */
 void LcdInit(void) {
 	GPIO_Init();
-	HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_WR_PIN, GPIO_PIN_SET); //WR=1
-	HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_RD_PIN, GPIO_PIN_SET); //RD=1
-	HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_CD_PIN, GPIO_PIN_RESET);//DC=1
-	HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_RST_PIN, GPIO_PIN_RESET); //RES=0;
+	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET|LCD_RD_PIN_SET|LCD_CD_PIN_SET|LCD_RST_PIN_RESET;//WR=1,RD=1,DC=1,RES=0;
 	HAL_Delay(1);//1ms
-	HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_RST_PIN, GPIO_PIN_SET);	//RES=1;
-	/*
+	LCD_CONTROL_PORT->BSRR = LCD_RST_PIN_SET;
+/*
 	U8 array[5];
-	ReadReg(0x0C, array, 1);
-	*/
+	ReadReg(0x0C, array, 1);*/
+
 	LcdWriteReg(0xE0);//MDDI Control 1 (E0h)
 	LcdWriteData(0x01);//VWAKE_EN=1, When VWAKE_EN is 1, client initiated wake-up is enabled
 
@@ -362,9 +356,10 @@ void LcdInit(void) {
 * Function description:
 *
 */
-void LcdClear(char mode,char color_r,char color_g, char color_b) {
+void LcdClear(U8 mode,U16 color) {
 		unsigned long int i;
-		LcdWriteReg(0x2A + mode);//
+
+		LcdWriteReg(0x2A + mode);
 		LcdWriteData(0);
 		LcdWriteData(0);
 		LcdWriteData(1);
@@ -377,10 +372,72 @@ void LcdClear(char mode,char color_r,char color_g, char color_b) {
 		LcdWriteData(240);//240
 		LcdWriteReg(0x2C);//Memory Write (2Ch)
 		for (i = 0; i < 96000; i++) {//(400*240)=96000pixel, 3byte per pixel 9600*10*3byte
-			LcdWriteData(color_r);
-			LcdWriteData(color_g);
-			LcdWriteData(color_b);
+			LcdWriteData((U8)(color>>8));
+			LcdWriteData((U8)color);
 	 	}
+	 	/*
+	LCD_CONTROL_PORT->BSRR = LCD_CD_PIN_RESET;
+	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET;
+	LCD_DATA_PORT->ODR=(LCD_DATA_PORT->ODR & 0xFFFFFF00)|(0x2A+mode);
+	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET;
+	//LcdWriteData(xh);//
+	LCD_CONTROL_PORT->BSRR = LCD_CD_PIN_SET;
+	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET;
+	LCD_DATA_PORT->ODR=(LCD_DATA_PORT->ODR & 0xFFFFFF00);
+	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET;
+	//LcdWriteData((U8)x);//
+	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET;
+	LCD_DATA_PORT->ODR=(LCD_DATA_PORT->ODR & 0xFFFFFF00);
+	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET;
+	//LcdWriteData(xh);//
+	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET;
+	LCD_DATA_PORT->ODR=(LCD_DATA_PORT->ODR & 0xFFFFFF00)|0x01;
+	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET;
+	//LcdWriteData((U8)x);//
+	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET;
+	LCD_DATA_PORT->ODR=(LCD_DATA_PORT->ODR & 0xFFFFFF00)|0x90;
+	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET;
+    //y
+    //LcdWriteReg(0x2A);//
+	LCD_CONTROL_PORT->BSRR = LCD_CD_PIN_RESET;
+	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET;
+	LCD_DATA_PORT->ODR=(LCD_DATA_PORT->ODR & 0xFFFFFF00)|(0x2B-mode);
+	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET;
+	//LcdWriteData(yh);//
+	LCD_CONTROL_PORT->BSRR = LCD_CD_PIN_SET;
+	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET;
+	LCD_DATA_PORT->ODR=(LCD_DATA_PORT->ODR & 0xFFFFFF00);
+	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET;
+	//LcdWriteData((U8)y);//
+	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET;
+	LCD_DATA_PORT->ODR=(LCD_DATA_PORT->ODR & 0xFFFFFF00);
+	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET;
+	//LcdWriteData(yh);//
+	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET;
+	LCD_DATA_PORT->ODR=(LCD_DATA_PORT->ODR & 0xFFFFFF00);
+	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET;
+	//LcdWriteData((U8)y);//
+	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET;
+	LCD_DATA_PORT->ODR=(LCD_DATA_PORT->ODR & 0xFFFFFF00)|0xF0;
+	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET;
+    //color
+	LCD_CONTROL_PORT->BSRR = LCD_CD_PIN_RESET;
+	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET;
+	LCD_DATA_PORT->ODR=(LCD_DATA_PORT->ODR & 0xFFFFFF00)|0x2C;
+	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET;
+
+	for (i = 0; i < 96000; i++) {//(400*240)=96000pixel, 3byte per pixel 9600*10*3byte
+		//LcdWriteData((U8)(PixelIndex>>8));//Upper byte
+		LCD_CONTROL_PORT->BSRR = LCD_CD_PIN_SET;
+		LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET;
+		LCD_DATA_PORT->ODR=(LCD_DATA_PORT->ODR & 0xFFFFFF00)|(U8)(color>>8);
+		LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET;
+		//LcdWriteData((U8)PixelIndex);//Lower byte
+		LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET;
+		LCD_DATA_PORT->ODR=(LCD_DATA_PORT->ODR & 0xFFFFFF00)|(U8)color;
+		LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET;
+ 	}*/
+
 }
 /********************************************************************
 *

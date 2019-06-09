@@ -153,8 +153,9 @@ void MainTask2(void) {
 	//CreateWindow();
 	U8 i = 0;
 	PROGBAR_Handle hProgBar;
+	GUI_SetColor(GUI_WHITE);
 	GUI_DispStringAt("Progress bar", 100, 50);
-	hProgBar = PROGBAR_Create(10, 90, 200, 60, WM_CF_SHOW);
+	hProgBar = PROGBAR_Create(10, 90, 380, 60, WM_CF_SHOW);
 	GUI_SetOrientation(GUI_ROTATION_180);
 	while (1) {
 		PROGBAR_SetBarColor(hProgBar, 0, GUI_GREEN);
@@ -164,6 +165,7 @@ void MainTask2(void) {
 		i++;
 		if (i > 100) {
 			i = 0;
+			break;
 		}
 	}
 }

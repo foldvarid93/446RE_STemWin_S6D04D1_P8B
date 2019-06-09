@@ -776,7 +776,7 @@ GUI_DRAWMODE GUI_GetDrawMode   (void);
 int   GUI_GetFontDistY         (void);
 int   GUI_GetFontSizeY         (void);
 void  GUI_GetFontInfo          (const GUI_FONT * pFont, GUI_FONTINFO * pfi);
-void  GUI_GetOrg               (int * px, int * py);
+void  GUI_GetOrg   	            (int * px, int * py);
 int   GUI_GetYSizeOfFont       (const GUI_FONT * pFont);
 int   GUI_GetYDistOfFont       (const GUI_FONT * pFont);
 int   GUI_GetTextAlign         (void);

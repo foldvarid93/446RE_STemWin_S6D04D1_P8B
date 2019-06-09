@@ -155,21 +155,89 @@ static void _SetPixelIndex(GUI_DEVICE * pDevice, int x, int y, int PixelIndex) {
     GUI_USE_PARA(y);
     GUI_USE_PARA(PixelIndex);
     {
+    	U8 xh=(U8)(x>>8);//high byte of the x
+    	U8 yh=(U8)(y>>8);//high byte of the y
+
+    	//The slow solution (GUI_Clear(240*400pix)=1147ms)
+    	/*
     	LcdWriteReg(0x2B);//
-    	LcdWriteData((U8)(x>>8));//
+    	LcdWriteData(xh);//
         LcdWriteData((U8)x);//
-        LcdWriteData((U8)(x>>8));//
+        LcdWriteData(xh);//
         LcdWriteData((U8)x);//
 
         LcdWriteReg(0x2A);//
-        LcdWriteData((U8)(y>>8));//
+        LcdWriteData(yh);//
         LcdWriteData((U8)y);//
-        LcdWriteData((U8)(y>>8));//
+        LcdWriteData(yh);//
         LcdWriteData((U8)y);//
 
         LcdWriteReg(0x2C);//Memory Write (2Ch)
         LcdWriteData((U8)(PixelIndex>>8));//Upper byte
         LcdWriteData((U8)PixelIndex);//Lower byte
+        */
+
+    	//The fast solution (GUI_Clear(240*400pix)=226ms) 5x faster
+        //x
+        //LcdWriteReg(0x2B);//
+    	LCD_CONTROL_PORT->BSRR = LCD_CD_PIN_RESET;
+    	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET;
+    	LCD_DATA_PORT->ODR=(LCD_DATA_PORT->ODR & 0xFFFFFF00)|0x2B;
+    	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET|LCD_CD_PIN_SET;
+    	//LcdWriteData(xh);//
+    	//LCD_CONTROL_PORT->BSRR = LCD_CD_PIN_SET;
+    	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET;
+    	LCD_DATA_PORT->ODR=(LCD_DATA_PORT->ODR & 0xFFFFFF00)|xh;
+    	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET;
+    	//LcdWriteData((U8)x);//
+    	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET;
+    	LCD_DATA_PORT->ODR=(LCD_DATA_PORT->ODR & 0xFFFFFF00)|(U8)x;
+    	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET;
+    	//LcdWriteData(xh);//
+    	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET;
+    	LCD_DATA_PORT->ODR=(LCD_DATA_PORT->ODR & 0xFFFFFF00)|xh;
+    	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET;
+    	//LcdWriteData((U8)x);//
+    	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET;
+    	LCD_DATA_PORT->ODR=(LCD_DATA_PORT->ODR & 0xFFFFFF00)|(U8)x;
+    	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET;
+        //y
+        //LcdWriteReg(0x2A);//
+    	LCD_CONTROL_PORT->BSRR = LCD_CD_PIN_RESET;
+    	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET;
+    	LCD_DATA_PORT->ODR=(LCD_DATA_PORT->ODR & 0xFFFFFF00)|0x2A;
+    	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET|LCD_CD_PIN_SET;
+    	//LcdWriteData(yh);//
+    	//LCD_CONTROL_PORT->BSRR = LCD_CD_PIN_SET;
+    	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET;
+    	LCD_DATA_PORT->ODR=(LCD_DATA_PORT->ODR & 0xFFFFFF00)|yh;
+    	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET;
+    	//LcdWriteData((U8)y);//
+    	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET;
+    	LCD_DATA_PORT->ODR=(LCD_DATA_PORT->ODR & 0xFFFFFF00)|(U8)y;
+    	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET;
+    	//LcdWriteData(yh);//
+    	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET;
+    	LCD_DATA_PORT->ODR=(LCD_DATA_PORT->ODR & 0xFFFFFF00)|yh;
+    	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET;
+    	//LcdWriteData((U8)y);//
+    	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET;
+    	LCD_DATA_PORT->ODR=(LCD_DATA_PORT->ODR & 0xFFFFFF00)|(U8)y;
+    	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET;
+        //color
+    	LCD_CONTROL_PORT->BSRR = LCD_CD_PIN_RESET;
+    	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET;
+    	LCD_DATA_PORT->ODR=(LCD_DATA_PORT->ODR & 0xFFFFFF00)|0x2C;
+    	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET|LCD_CD_PIN_SET;
+    	//LcdWriteData((U8)(PixelIndex>>8));//Upper byte
+    	//LCD_CONTROL_PORT->BSRR = LCD_CD_PIN_SET;
+    	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET;
+    	LCD_DATA_PORT->ODR=(LCD_DATA_PORT->ODR & 0xFFFFFF00)|(U8)(PixelIndex>>8);
+    	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET;
+    	//LcdWriteData((U8)PixelIndex);//Lower byte
+    	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET;
+    	LCD_DATA_PORT->ODR=(LCD_DATA_PORT->ODR & 0xFFFFFF00)|(U8)PixelIndex;
+    	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET;
     }
     #if (LCD_MIRROR_X == 0) && (LCD_MIRROR_Y == 0) && (LCD_SWAP_XY == 0)
       #undef xPhys
