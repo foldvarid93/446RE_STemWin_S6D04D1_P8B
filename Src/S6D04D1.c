@@ -1,14 +1,13 @@
 #include "S6D04D1.h"
-
 /*********************************************************************
 *
-*       Local functions
+*Local functions
 *
 **********************************************************************
 */
 /********************************************************************
 *
-*       LcdWriteReg
+*LcdWriteReg
 *
 * Function description:
 *   Sets display register
@@ -23,7 +22,7 @@ void LcdWriteReg(U8 Data) {
 }
 /********************************************************************
 *
-*       LcdWriteReg
+*LcdWriteReg
 *
 * Function description:
 *   Sets display register
@@ -40,7 +39,7 @@ U8 LcdReadData(void) {
 }
 /********************************************************************
 *
-*       LcdWriteData
+*LcdWriteData
 *
 * Function description:
 *   Writes a value to a display register
@@ -55,7 +54,7 @@ void LcdWriteData(U8 Data) {
 }
 /********************************************************************
 *
-*       LcdWriteDataMultiple
+*LcdWriteDataMultiple
 *
 * Function description:
 *   Writes multiple values to a display register.
@@ -72,7 +71,7 @@ void LcdWriteDataMultiple(U8 * pData, int NumItems) {
 }
 /********************************************************************
 *
-*       LcdReadDataMultiple
+*LcdReadDataMultiple
 *
 * Function description:
 *   Reads multiple values from a display register.
@@ -83,7 +82,13 @@ void LcdReadDataMultiple(U8 * pData, int NumItems) {
 
   }
 }
-//ReadRegister
+/********************************************************************
+*
+*Read register
+*
+* Function description:
+*
+*/
 void ReadReg(U8 Reg, U8 * pData, U8 NumItems) {
 	LcdWriteReg(Reg);
 	GPIO_InitTypeDef GPIO_InitStruct;
@@ -93,16 +98,14 @@ void ReadReg(U8 Reg, U8 * pData, U8 NumItems) {
 	LcdReadData();
 	while (NumItems--) {
 		*pData++=LcdReadData();
-
 	}
 	GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7;
 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
 	HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 }
-//
 /********************************************************************
 *
-*       GPIO init
+*GPIO init
 *
 * Function description:
 *
@@ -147,11 +150,10 @@ void LcdInit(void) {
 	HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_RST_PIN, GPIO_PIN_RESET); //RES_Write(0);
 	HAL_Delay(1);//1ms
 	HAL_GPIO_WritePin(LCD_CONTROL_PORT, LCD_RST_PIN, GPIO_PIN_SET);	//RES_Write(1);
-
-	//
+	/*
 	U8 array[5];
 	ReadReg(0x0C, array, 1);
-	//
+	*/
 	LcdWriteReg(0xE0);//MDDI Control 1 (E0h)
 	LcdWriteData(0x01);//VWAKE_EN=1, When VWAKE_EN is 1, client initiated wake-up is enabled
 
@@ -310,20 +312,16 @@ void LcdInit(void) {
 	LcdWriteData(0x3B);
 	LcdWriteData(0x22);
 	LcdWriteData(0x22);
-//
-	LcdWriteReg(0x0C);
-
-	//
 
 	//LcdWriteReg(0x35);
 	LcdWriteReg(0x34); //Tearing Effect Line OFF (34h)
 
 	LcdWriteReg(0x36);//Memory Data Access Control (36h)
-	LcdWriteData(0x00);//48);//08
+	LcdWriteData(0x80);//48);//08
 
 	LcdWriteReg(0x3A);//Interface Pixel Format (3Ah)
-	LcdWriteData(0x55);//(0x77);
-	ReadReg(0x0C, array, 1);//
+	LcdWriteData(0x55);//101-16bit/pixel
+	//ReadReg(0x0C, array, 1);//
 
 	LcdWriteReg(0xF2);//Display Control Register (F2h)
 	LcdWriteData(0x17);
@@ -343,7 +341,7 @@ void LcdInit(void) {
 	LcdWriteData(0x80);
 	LcdWriteData(0x00);
 	LcdWriteData(0x00);
-	ReadReg(0xF6, array, 4);//
+	//ReadReg(0xF6, array, 4);//
 
 	LcdWriteReg(0xFD);//Gate Control Register (FDh)
 	LcdWriteData(0x02);
@@ -352,6 +350,7 @@ void LcdInit(void) {
 	HAL_Delay(20);
 
 	LcdWriteReg(0x29);//Display On (29h)
+	//ReadReg(0x0B, array, 1);//read MADCTL
 	HAL_Delay(20);
 }
 /********************************************************************
@@ -407,3 +406,6 @@ void DrawPixel(U16 x,U16 y,U16 color) {
 	  LcdWriteData((U8)(color>>8));
 	  LcdWriteData((U8)color);
 }
+/*
+ *End
+ */

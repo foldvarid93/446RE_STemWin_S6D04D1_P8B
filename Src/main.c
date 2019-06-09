@@ -84,8 +84,7 @@ extern void MainTask2(void);
   *
   * @retval None
   */
-int main(void)
-{
+int main(void){
   /* USER CODE BEGIN 1 */
 
   /* USER CODE END 1 */
@@ -109,7 +108,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
   GUI_Init();
   GUI_Clear();
-  //GUI_SetOrientation(GUI_MIRROR_X|GUI_MIRROR_Y);
+  GUI_SetOrientation(GUI_ROTATION_180);
   MainTask2();
   //
   DrawPixel(10,10,0xFFFF);
@@ -121,7 +120,7 @@ int main(void)
   GUI_DrawPixel(380,20);
   GUI_DrawPixel(20,220);
   GUI_DrawPixel(380,220);
-  //LcdInit();
+  //
   LcdClear(1,0xFF,0xFF,0xFF);
   U16 x=10;
   U16 y=10;
@@ -139,15 +138,11 @@ int main(void)
 		  DrawPixel(x1,y1,P);
 	  }
   }
-
-
-
   //GUI_Clear();
   //GUI_DrawCircle(100,100,20);
   while(1){
 
   }
-
   /* USER CODE END 2 */
 
   /* Infinite loop */

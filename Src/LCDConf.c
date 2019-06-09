@@ -165,7 +165,7 @@ int LCD_X_DisplayDriver(unsigned LayerIndex, unsigned Cmd, void * pData) {
   
   switch (Cmd) {
   case LCD_X_INITCONTROLLER: {
-	LcdInit();//ili9341 init code
+	LcdInit();//
     return 0;
   }
   default:
