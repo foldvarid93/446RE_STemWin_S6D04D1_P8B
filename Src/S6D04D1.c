@@ -356,88 +356,100 @@ void LcdInit(void) {
 * Function description:
 *
 */
-void LcdClear(U8 mode,U16 color) {
-		unsigned long int i;
+void LcdClear(U16 color) {
+	unsigned long int i;
 
-		LcdWriteReg(0x2A + mode);
-		LcdWriteData(0);
-		LcdWriteData(0);
-		LcdWriteData(1);
-		LcdWriteData(0x90);//400
+	/*
+	//1,5s full lcd clear
+	LcdWriteReg(0x2A + mode);
+	LcdWriteData(0);
+	LcdWriteData(0);
+	LcdWriteData(1);
+	LcdWriteData(0x90);	//400
 
-		LcdWriteReg(0x2b - mode);//
-		LcdWriteData(0);
-		LcdWriteData(0);//
-		LcdWriteData(0);
-		LcdWriteData(240);//240
-		LcdWriteReg(0x2C);//Memory Write (2Ch)
-		for (i = 0; i < 96000; i++) {//(400*240)=96000pixel, 3byte per pixel 9600*10*3byte
-			LcdWriteData((U8)(color>>8));
-			LcdWriteData((U8)color);
-	 	}
-	 	/*
-	LCD_CONTROL_PORT->BSRR = LCD_CD_PIN_RESET;
-	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET;
-	LCD_DATA_PORT->ODR=(LCD_DATA_PORT->ODR & 0xFFFFFF00)|(0x2A+mode);
-	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET;
-	//LcdWriteData(xh);//
-	LCD_CONTROL_PORT->BSRR = LCD_CD_PIN_SET;
-	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET;
-	LCD_DATA_PORT->ODR=(LCD_DATA_PORT->ODR & 0xFFFFFF00);
-	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET;
-	//LcdWriteData((U8)x);//
-	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET;
-	LCD_DATA_PORT->ODR=(LCD_DATA_PORT->ODR & 0xFFFFFF00);
-	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET;
-	//LcdWriteData(xh);//
-	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET;
-	LCD_DATA_PORT->ODR=(LCD_DATA_PORT->ODR & 0xFFFFFF00)|0x01;
-	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET;
-	//LcdWriteData((U8)x);//
-	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET;
-	LCD_DATA_PORT->ODR=(LCD_DATA_PORT->ODR & 0xFFFFFF00)|0x90;
-	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET;
-    //y
-    //LcdWriteReg(0x2A);//
-	LCD_CONTROL_PORT->BSRR = LCD_CD_PIN_RESET;
-	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET;
-	LCD_DATA_PORT->ODR=(LCD_DATA_PORT->ODR & 0xFFFFFF00)|(0x2B-mode);
-	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET;
-	//LcdWriteData(yh);//
-	LCD_CONTROL_PORT->BSRR = LCD_CD_PIN_SET;
-	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET;
-	LCD_DATA_PORT->ODR=(LCD_DATA_PORT->ODR & 0xFFFFFF00);
-	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET;
-	//LcdWriteData((U8)y);//
-	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET;
-	LCD_DATA_PORT->ODR=(LCD_DATA_PORT->ODR & 0xFFFFFF00);
-	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET;
-	//LcdWriteData(yh);//
-	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET;
-	LCD_DATA_PORT->ODR=(LCD_DATA_PORT->ODR & 0xFFFFFF00);
-	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET;
-	//LcdWriteData((U8)y);//
-	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET;
-	LCD_DATA_PORT->ODR=(LCD_DATA_PORT->ODR & 0xFFFFFF00)|0xF0;
-	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET;
-    //color
-	LCD_CONTROL_PORT->BSRR = LCD_CD_PIN_RESET;
-	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET;
-	LCD_DATA_PORT->ODR=(LCD_DATA_PORT->ODR & 0xFFFFFF00)|0x2C;
-	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET;
-
+	LcdWriteReg(0x2b - mode);	//
+	LcdWriteData(0);
+	LcdWriteData(0);	//
+	LcdWriteData(0);
+	LcdWriteData(239);	//240
+	LcdWriteReg(0x2C);	//Memory Write (2Ch)
 	for (i = 0; i < 96000; i++) {//(400*240)=96000pixel, 3byte per pixel 9600*10*3byte
-		//LcdWriteData((U8)(PixelIndex>>8));//Upper byte
-		LCD_CONTROL_PORT->BSRR = LCD_CD_PIN_SET;
-		LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET;
-		LCD_DATA_PORT->ODR=(LCD_DATA_PORT->ODR & 0xFFFFFF00)|(U8)(color>>8);
-		LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET;
-		//LcdWriteData((U8)PixelIndex);//Lower byte
-		LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET;
-		LCD_DATA_PORT->ODR=(LCD_DATA_PORT->ODR & 0xFFFFFF00)|(U8)color;
-		LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET;
- 	}*/
+		LcdWriteData((U8) (color >> 8));
+		LcdWriteData((U8) color);
+	}*/
 
+	//20ms full lcd clear if color is black
+	//34ms full lcd clear any other colors
+	LCD_CONTROL_PORT->BSRR = LCD_CD_PIN_RESET|LCD_WR_PIN_RESET;
+	//LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET;
+	LCD_DATA_PORT->ODR = (LCD_DATA_PORT->ODR & 0xFFFFFF00) | 0x2B ;
+	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET | LCD_CD_PIN_SET;
+	//LcdWriteData(xh);//
+	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET;
+	LCD_DATA_PORT->ODR = (LCD_DATA_PORT->ODR & 0xFFFFFF00);
+	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET;
+	//LcdWriteData((U8)x);//
+	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET;
+	LCD_DATA_PORT->ODR = (LCD_DATA_PORT->ODR & 0xFFFFFF00);
+	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET;
+	//LcdWriteData(xh);//
+	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET;
+	LCD_DATA_PORT->ODR = (LCD_DATA_PORT->ODR & 0xFFFFFF00) | 0x01;
+	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET;
+	//LcdWriteData((U8)x);//
+	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET;
+	LCD_DATA_PORT->ODR = (LCD_DATA_PORT->ODR & 0xFFFFFF00) | 0x90;
+	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET | LCD_CD_PIN_RESET;
+	//y
+	//LcdWriteReg(0x2A);//
+	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET;
+	LCD_DATA_PORT->ODR = (LCD_DATA_PORT->ODR & 0xFFFFFF00) | 0x2A;
+	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET | LCD_CD_PIN_SET;
+	//LcdWriteData(yh);//
+	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET;
+	LCD_DATA_PORT->ODR = (LCD_DATA_PORT->ODR & 0xFFFFFF00);
+	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET;
+	//LcdWriteData((U8)y);//
+	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET;
+	LCD_DATA_PORT->ODR = (LCD_DATA_PORT->ODR & 0xFFFFFF00);
+	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET;
+	//LcdWriteData(yh);//
+	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET;
+	LCD_DATA_PORT->ODR = (LCD_DATA_PORT->ODR & 0xFFFFFF00);
+	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET;
+	//LcdWriteData((U8)y);//
+	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET;
+	LCD_DATA_PORT->ODR = (LCD_DATA_PORT->ODR & 0xFFFFFF00) | 0xEF;
+	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET | LCD_CD_PIN_RESET;
+	//color
+	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET;
+	LCD_DATA_PORT->ODR = (LCD_DATA_PORT->ODR & 0xFFFFFF00) | 0x2C;
+	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET | LCD_CD_PIN_SET;
+	if(color==0x0000){//black
+		LCD_DATA_PORT->ODR = (LCD_DATA_PORT->ODR & 0xFFFFFF00);
+		for (i = 0; i < 96000; i++) { //(400*240)=96000pixel, 3byte per pixel 9600*10*3byte
+			//LcdWriteData((U8)(PixelIndex>>8));//Upper byte
+			LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET;
+			LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET;
+			//LcdWriteData((U8)PixelIndex);//Lower byte
+			LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET;
+			LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET;
+		}
+	}
+	else{//other colors
+		U8 colorH = (U8) (color >> 8);
+		U8 colorL = (U8) color;
+		for (i = 0; i < 96000; i++) { //(400*240)=96000pixel, 3byte per pixel 9600*10*3byte
+			//LcdWriteData((U8)(PixelIndex>>8));//Upper byte
+			LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET;
+			LCD_DATA_PORT->ODR = (LCD_DATA_PORT->ODR & 0xFFFFFF00) | colorH;
+			LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET;
+			//LcdWriteData((U8)PixelIndex);//Lower byte
+			LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET;
+			LCD_DATA_PORT->ODR = (LCD_DATA_PORT->ODR & 0xFFFFFF00) | colorL;
+			LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET;
+		}
+	}
 }
 /********************************************************************
 *

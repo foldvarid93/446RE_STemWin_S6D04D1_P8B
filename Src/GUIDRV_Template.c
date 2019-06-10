@@ -60,8 +60,6 @@ Purpose     : Template driver, could be used as starting point for new
 *
 **********************************************************************
 */
-#define LCD_MIRROR_X 0
-#define LCD_MIRROR_Y 0
 #define LCD_XSIZE 240
 #define LCD_YSIZE 400
 
@@ -180,12 +178,10 @@ static void _SetPixelIndex(GUI_DEVICE * pDevice, int x, int y, int PixelIndex) {
     	//The fast solution (GUI_Clear(240*400pix)=226ms) 5x faster
         //x
         //LcdWriteReg(0x2B);//
-    	LCD_CONTROL_PORT->BSRR = LCD_CD_PIN_RESET;
-    	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET;
+    	LCD_CONTROL_PORT->BSRR = LCD_CD_PIN_RESET|LCD_WR_PIN_RESET;
     	LCD_DATA_PORT->ODR=(LCD_DATA_PORT->ODR & 0xFFFFFF00)|0x2B;
     	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET|LCD_CD_PIN_SET;
     	//LcdWriteData(xh);//
-    	//LCD_CONTROL_PORT->BSRR = LCD_CD_PIN_SET;
     	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET;
     	LCD_DATA_PORT->ODR=(LCD_DATA_PORT->ODR & 0xFFFFFF00)|xh;
     	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET;
@@ -203,12 +199,10 @@ static void _SetPixelIndex(GUI_DEVICE * pDevice, int x, int y, int PixelIndex) {
     	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET;
         //y
         //LcdWriteReg(0x2A);//
-    	LCD_CONTROL_PORT->BSRR = LCD_CD_PIN_RESET;
-    	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET;
+    	LCD_CONTROL_PORT->BSRR = LCD_CD_PIN_RESET|LCD_WR_PIN_RESET;
     	LCD_DATA_PORT->ODR=(LCD_DATA_PORT->ODR & 0xFFFFFF00)|0x2A;
     	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET|LCD_CD_PIN_SET;
     	//LcdWriteData(yh);//
-    	//LCD_CONTROL_PORT->BSRR = LCD_CD_PIN_SET;
     	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET;
     	LCD_DATA_PORT->ODR=(LCD_DATA_PORT->ODR & 0xFFFFFF00)|yh;
     	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET;
@@ -223,14 +217,12 @@ static void _SetPixelIndex(GUI_DEVICE * pDevice, int x, int y, int PixelIndex) {
     	//LcdWriteData((U8)y);//
     	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET;
     	LCD_DATA_PORT->ODR=(LCD_DATA_PORT->ODR & 0xFFFFFF00)|(U8)y;
-    	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET;
+    	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET|LCD_CD_PIN_RESET;
         //color
-    	LCD_CONTROL_PORT->BSRR = LCD_CD_PIN_RESET;
     	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET;
     	LCD_DATA_PORT->ODR=(LCD_DATA_PORT->ODR & 0xFFFFFF00)|0x2C;
     	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET|LCD_CD_PIN_SET;
     	//LcdWriteData((U8)(PixelIndex>>8));//Upper byte
-    	//LCD_CONTROL_PORT->BSRR = LCD_CD_PIN_SET;
     	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_RESET;
     	LCD_DATA_PORT->ODR=(LCD_DATA_PORT->ODR & 0xFFFFFF00)|(U8)(PixelIndex>>8);
     	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET;

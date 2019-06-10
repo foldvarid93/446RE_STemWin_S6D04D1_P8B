@@ -67,7 +67,7 @@ void SystemClock_Config(void);
 void Encoder_GPIOInit(void);
 extern void S6D04D1init(void);
 extern void LcdWriteReg(U8 Data);
-extern void LcdClear(U8 mode,U16 color);
+extern void LcdClear(U16 color);
 extern void DrawPixel(U16 x,U16 y,U16 color);
 extern void LcdInit(void);
 /* USER CODE BEGIN PFP */
@@ -108,7 +108,18 @@ int main(void){
   /* USER CODE BEGIN 2 */
   GUI_Init();
   //GUI_Clear();
-  LcdClear(1,0x0000);
+  //
+  U16 color=0x0000;
+	  for(U16 R=0;R<32;R=R+2){
+		  for(U16 G=0;G<64;G=G+4){
+			  for(U16 B=0;B<32;B=B+2){
+				  color=((R<<11)&0xF800)|((G<<5)&0x07E0)|(B&0x001F);
+				  LcdClear(color);
+			  }
+		  }
+	  }
+	  //
+  LcdClear(0x0000);
   GUI_SetColor(GUI_WHITE);
   GUI_DispStringAt("Hello World", 100, 20);
   HAL_Delay(500);
@@ -128,8 +139,8 @@ int main(void){
 
   HAL_Delay(1000);
   //GUI_Clear();
-  LcdClear(1,0xFFFF);
-  LcdClear(0,0x07E0);
+  LcdClear(0xFFFF);
+  LcdClear(0x07E0);
   //MainTask2();
   //
   DrawPixel(10,10,0xFFFF);
@@ -142,7 +153,9 @@ int main(void){
   GUI_DrawPixel(20,220);
   GUI_DrawPixel(380,220);
   //
-  LcdClear(1,0xFFFF);
+  LcdClear(0x0000);
+  GUI_DrawCircle(200,120,119);
+  /*
   U16 x=10;
   U16 y=10;
   U16 x1=x;
@@ -159,9 +172,11 @@ int main(void){
 		  DrawPixel(x1,y1,P);
 	  }
   }
+  */
   HAL_Delay(500);
   GUI_Clear();
-  //GUI_DrawCircle(100,100,20);
+  HAL_Delay(500);
+  //
   while(1){
 
   }
