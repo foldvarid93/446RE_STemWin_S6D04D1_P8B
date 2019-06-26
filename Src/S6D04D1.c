@@ -108,30 +108,19 @@ void ReadReg(U8 Reg, U8 * pData, U8 NumItems) {
 *
 */
 void GPIO_Init(void){
-
   GPIO_InitTypeDef GPIO_InitStruct;
-
   /* GPIO Ports Clock Enable */
-  __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
-
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3
                           |GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7
-                          |GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10|GPIO_PIN_11
-                          |GPIO_PIN_12, GPIO_PIN_RESET);
-
-  /*Configure GPIO pins : PA0 PA1 PA2 PA3
-                           PA4 PA5 PA6 PA7
-                           PA8 PA9 PA10 PA11
-                           PA12 */
-  GPIO_InitStruct.Pin = GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10|GPIO_PIN_11|GPIO_PIN_12;
+                          |GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10|GPIO_PIN_12
+                          |GPIO_PIN_13, GPIO_PIN_RESET);
+  /*Configure GPIO pins*/
+  GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7|GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10|GPIO_PIN_12|GPIO_PIN_13;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-  GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 }
 /********************************************************************
@@ -143,7 +132,7 @@ void GPIO_Init(void){
 */
 void LcdInit(void) {
 	GPIO_Init();
-	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET|LCD_RD_PIN_SET|LCD_CD_PIN_SET|LCD_RST_PIN_RESET;//WR=1,RD=1,DC=1,RES=0;
+	LCD_CONTROL_PORT->BSRR = LCD_WR_PIN_SET|LCD_RD_PIN_SET|LCD_CD_PIN_SET|LCD_RST_PIN_RESET|LCD_CS_PIN_RESET;//WR=1,RD=1,DC=1,RES=0;
 	HAL_Delay(1);//1ms
 	LCD_CONTROL_PORT->BSRR = LCD_RST_PIN_SET;
 /*
@@ -479,4 +468,4 @@ void DrawPixel(U16 x,U16 y,U16 color) {
 }
 /*
  *End
- */
+*/

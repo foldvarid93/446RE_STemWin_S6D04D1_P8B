@@ -107,8 +107,10 @@ int main(void){
   MX_CRC_Init();
   /* USER CODE BEGIN 2 */
   GUI_Init();
-  //GUI_Clear();
+  GUI_Clear();
+  MainTask2();
   //
+  /*
   U16 color=0x0000;
 	  for(U16 R=0;R<32;R=R+2){
 		  for(U16 G=0;G<64;G=G+4){
@@ -141,7 +143,6 @@ int main(void){
   //GUI_Clear();
   LcdClear(0xFFFF);
   LcdClear(0x07E0);
-  //MainTask2();
   //
   DrawPixel(10,10,0xFFFF);
   DrawPixel(390,10,0xFFFF);
@@ -155,7 +156,6 @@ int main(void){
   //
   LcdClear(0x0000);
   GUI_DrawCircle(200,120,119);
-  /*
   U16 x=10;
   U16 y=10;
   U16 x1=x;
@@ -172,14 +172,10 @@ int main(void){
 		  DrawPixel(x1,y1,P);
 	  }
   }
-  */
   HAL_Delay(500);
   GUI_Clear();
   HAL_Delay(500);
-  //
-  while(1){
-
-  }
+  */
   /* USER CODE END 2 */
 
   /* Infinite loop */
