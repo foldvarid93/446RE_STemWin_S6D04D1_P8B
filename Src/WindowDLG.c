@@ -165,7 +165,7 @@ void MainTask2(void) {
 		i++;
 		if (i > 100) {
 			i = 0;
-			break;
+			//break;
 		}
 	}
 }
